@@ -12,19 +12,23 @@ export default function Theories() {
 
   return (
     <div>
-      <input
-        placeholder="Поиск..."
+      <section className="tool-bar">
+        <input
+        className="search-input"
+        placeholder="Поиск по теориям и тегам..."
         value={query}
         onChange={e => setQuery(e.target.value)}
       />
       <label>
-        Показывать спойлеры до уровня:
+        Cпойлеры до:
         <input
           type="range" min="1" max="3"
           value={spoilerMax}
           onChange={e => setSpoilerMax(+e.target.value)}
         />
+        <span className="theory-spoiler-val">{spoilerMax}</span>
       </label>
+      </section>
 
       {filtered.map(t => (
         <div key={t.id} className="card">

@@ -208,6 +208,34 @@
   font-family: 'JetBrains Mono', monospace;
 }
 
+.tool-bar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-input {
+    flex: 1;
+    max-width: 900px;
+    min-width: 220px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+    transition: border-color .15s;
+}
+
+.search-input:focus { border-color: var(--accent); }
+.search-input::placeholder { color: var(--text-dim); }
+
 @media (prefers-color-scheme: dark) {
   :root {
     --text: #9ca3af;
