@@ -46,25 +46,25 @@
 
 .nav a {
   padding: 8px 16px;
-  border-radius: var(--radius-md);           /* было --radius-sm, давайте как у карточек */
+  border-radius: var(--radius-md);           
   color: var(--text-dim);
   font-weight: 500;
   text-decoration: none;
-  border: 1px solid transparent;             /* место под обводку, чтобы не прыгало */
+  border: 1px solid transparent;             
   transition: all .15s;
 }
 
 .nav a:hover {
-  color: var(--text-h);                      /* как у h1/h2 — ярче, чем --text */
+  color: var(--text-h);                      
   background: var(--bg-card);
-  border-color: var(--accent);               /* акцентная обводка как у .feature:hover */
-  transform: translateY(-2px);               /* подъём как у карточки */
+  border-color: var(--accent);               
+  transform: translateY(-2px);               
 }
 
 .nav a.active {
   color: var(--text-h);
   background: var(--bg-card);
-  border-color: var(--accent-border);        /* у активной — мягче обводка */
+  border-color: var(--accent-border);        
 }
 
 .search-icon {
@@ -81,10 +81,9 @@
   cursor: pointer;
   background-color: rgba(15,17,21,0.9); border: rgba(15,17,21,0.9);
 
-  margin-left: auto;   /* ← вот это прижимает к правому краю */
+  margin-left: auto;   
 }
 
-/* === HERO === */
 .hero {
   padding: 24px 0 40px;
   border-bottom: 1px solid var(--border);
@@ -94,7 +93,6 @@
 .hero h1 { margin-bottom: 25px; margin-left: 25px; }
 .hero p { font-size: 17px; max-width: 520px; margin-left: 25px; }
 
-/* === КАРТОЧКИ-РАЗДЕЛЫ === */
 .feature-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -120,7 +118,6 @@
 .feature-stat { font-size: 13px; margin-top: 4px; }
 .feature h3 { margin-bottom: 0; }
 
-/* === ЗАГОЛОВОК СЕКЦИИ === */
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -131,14 +128,12 @@
 .section-header a { font-size: 14px; transition: color .15s; }
 .section-header a:hover { color: var(--text); }
 
-/* === СЕТКА ТЕОРИЙ === */
 .theory-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 16px;
 }
 
-/* === КАРТОЧКА ТЕОРИИ === */
 .card {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -167,7 +162,6 @@
 }
 .theory-card ul li { margin-bottom: 4px; }
 
-/* === СПОЙЛЕРЫ === */
 .spoiler-badge {
   display: inline-flex;
   align-items: center;
@@ -195,7 +189,6 @@
 }
 .spoiler-block:hover { background: rgba(251,191,36,0.1); }
 
-/* === ТЕГИ === */
 .tags { display: flex; gap: 6px; flex-wrap: wrap; }
 .tag {
   display: inline-block;
