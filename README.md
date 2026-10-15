@@ -88,8 +88,8 @@ src/
 
 ```bash
 # 1. Клонировать
-git clone https://github.com/ваш-логин/ваш-репозиторий.git
-cd ваш-репозиторий
+git clone https://github.com/lalitahasnuts/fandomMap
+cd fandomMap
 
 # 2. Установить зависимости
 npm install
