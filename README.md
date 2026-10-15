@@ -117,3 +117,6 @@ npm run preview    # локально посмотреть прод-сборку
 | `/map` | Карта связей | 🚧 заглушка |
 | `/timeline` | Таймлайн | 🚧 заглушка |
 | `/theories` | Теории | 🚧 заглушка |
+
+<img width="1128" height="813" alt="image" src="https://github.com/user-attachments/assets/cf07917d-398c-4cb9-b2ab-2e87dfd501fd" />
+
