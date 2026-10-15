@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Карта фандома — прототип</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     ДИЗАЙН-СИСТЕМА — меняйте переменные здесь
+     ============================================================ */
+  :root {
+    --bg:        #0F1115;
+    --bg-card:   #1A1D24;
+    --bg-hover:  #22262F;
+    --border:    #2A2F3A;
+    --text:      #E6E8EB;
+    --text-dim:  #8B92A0;
+
+    --accent:    #60A5FA;   /* нейтральный */
+    --ally:      #4ADE80;   /* союз */
+    --conflict:  #F87171;   /* конфликт */
+    --romance:   #F472B6;   /* романтика */
+    --spoiler:   #FBBF24;   /* спойлер */
+
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-pill: 999px;
+
+    --shadow: 0 4px 20px rgba(0,0,0,0.35);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+
+  /* ============================================================
+     ХЕДЕР
+     ============================================================ */
+  .header {
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    position: sticky;
+    top: 0;
+    background: rgba(15,17,21,0.9);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+  }
+
+  .logo {
+    font-weight: 800;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+  }
+
+  .nav {
+    display: flex;
+    gap: 4px;
+    flex: 1;
+  }
+
+  .nav button {
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    color: var(--text-dim);
+    font-weight: 500;
+    transition: all .15s;
+  }
+
+  .nav button:hover { color: var(--text); background: var(--bg-hover); }
+  .nav button.active { color: var(--text); background: var(--bg-card); }
+
+  .search-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dim);
+    transition: all .15s;
+  }
+  .search-icon:hover { color: var(--text); background: var(--bg-hover); }
+
+  /* ============================================================
+     КОНТЕЙНЕР
+     ============================================================ */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
+  }
+
+  .screen { display: none; }
+  .screen.active { display: block; animation: fadeIn .2s ease; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ============================================================
+     ОБЩИЕ ЭЛЕМЕНТЫ
+     ============================================================ */
+  h1 { font-size: 32px; font-weight: 800; letter-spacing: -0.5px; }
+  h2 { font-size: 20px; font-weight: 700; margin-bottom: 16px; }
+  h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+
+  .muted { color: var(--text-dim); }
+
+  .tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: var(--radius-pill);
+    font-size: 12px;
+    font-weight: 500;
+    background: rgba(96,165,250,0.12);
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    transition: all .15s;
+  }
+  .card:hover { background: var(--bg-hover); transform: translateY(-2px); }
+
+  /* ============================================================
+     ЭКРАН 1: ГЛАВНАЯ
+     ============================================================ */
+  .hero {
+    padding: 32px 0 40px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 40px;
+  }
+  .hero h1 { margin-bottom: 12px; }
+  .hero p { color: var(--text-dim); font-size: 17px; max-width: 520px; }
+
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+
+  .feature {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .feature:hover { background: var(--bg-hover); border-color: var(--accent); }
+  .feature .icon { font-size: 28px; margin-bottom: 12px; }
+  .feature .stat { color: var(--text-dim); font-size: 13px; margin-top: 4px; }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 16px;
+  }
+
+  /* ============================================================
+     ЭКРАН 2: КАРТА СВЯЗЕЙ
+     ============================================================ */
+  .map-layout {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 20px;
+    height: calc(100vh - 180px);
+    min-height: 520px;
+  }
+
+  .sidebar {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    overflow-y: auto;
+  }
+
+  .filter-group { margin-bottom: 24px; }
+  .filter-group h4 {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+  }
+
+  .checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .checkbox input { accent-color: var(--accent); }
+
+  .legend-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    display: inline-block; margin-right: 8px;
+  }
+
+  .graph-wrap {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    position: relative;
+    overflow: hidden;
+  }
+  .graph-wrap svg { display: block; width: 100%; height: 100%; }
+
+  .graph-controls {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    display: flex;
+    gap: 8px;
+    background: rgba(15,17,21,0.85);
+    padding: 6px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+  }
+  .graph-controls button {
+    width: 32px; height: 32px;
+    border-radius: 6px;
+    color: var(--text-dim);
+    font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .graph-controls button:hover { background: var(--bg-hover); color: var(--text); }
+
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+  }
+  .slider-row input[type=range] {
+    flex: 1;
+    accent-color: var(--spoiler);
+  }
+
+  /* ============================================================
+     ЭКРАН 3: ТАЙМЛАЙН
+     ============================================================ */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+  }
+  .tabs button {
+    padding: 10px 18px;
+    color: var(--text-dim);
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all .15s;
+  }
+  .tabs button:hover { color: var(--text); }
+  .tabs button.active {
+    color: var(--text);
+    border-bottom-color: var(--accent);
+  }
+
+  .timeline {
+    position: relative;
+    padding-left: 32px;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 8px; top: 6px; bottom: 6px;
+    width: 2px;
+    background: var(--border);
+  }
+
+  .event {
+    position: relative;
+    padding-bottom: 28px;
+  }
+  .event::before {
+    content: '';
+    position: absolute;
+    left: -32px; top: 6px;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 3px solid var(--bg);
+    box-shadow: 0 0 0 1px var(--accent);
+  }
+  .event .event-title {
+    font-weight: 700;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .event .event-body { color: var(--text-dim); font-size: 14px; margin-bottom: 6px; }
+  .event .tags { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  .season-label {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent);
+    margin: 8px 0 20px;
+    padding-left: 0;
+  }
+
+  /* ============================================================
+     ЭКРАН 4: ТЕОРИИ
+     ============================================================ */
+  .toolbar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .search-input {
+    flex: 1;
+    min-width: 220px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+    transition: border-color .15s;
+  }
+  .search-input:focus { border-color: var(--accent); }
+  .search-input::placeholder { color: var(--text-dim); }
+
+  .theory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+
+  .theory-card { display: flex; flex-direction: column; gap: 12px; }
+  .theory-card .head {
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
+  }
+  .theory-card ul {
+    padding-left: 18px;
+    color: var(--text-dim);
+    font-size: 14px;
+  }
+  .theory-card ul li { margin-bottom: 4px; }
+  .theory-card .tags { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  .spoiler-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: var(--radius-pill);
+    background: rgba(251,191,36,0.12);
+    color: var(--spoiler);
+    white-space: nowrap;
+  }
+
+  .spoiler-block {
+    background: rgba(251,191,36,0.06);
+    border: 1px dashed rgba(251,191,36,0.35);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    text-align: center;
+    color: var(--spoiler);
+    font-size: 13px;
+    cursor: pointer;
+    user-select: none;
+    transition: all .15s;
+  }
+  .spoiler-block:hover { background: rgba(251,191,36,0.1); }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     ХЕДЕР
+     ============================================================ -->
+<header class="header">
+  <div class="logo">🗺️ КАРТА ФАНДОМА</div>
+  <nav class="nav">
+    <button data-screen="home" class="active">Главная</button>
+    <button data-screen="map">Карта</button>
+    <button data-screen="timeline">Таймлайн</button>
+    <button data-screen="theories">Теории</button>
+  </nav>
+  <button class="search-icon" title="Поиск">🔍</button>
+</header>
+
+<!-- ============================================================
+     ЭКРАН 1: ГЛАВНАЯ
+     ============================================================ -->
+<main class="container">
+  <section id="screen-home" class="screen active">
+    <div class="hero">
+      <h1>Исследуй вселенную</h1>
+      <p class="muted">Связи между персонажами, события по сезонам и теории фанатов — в одном месте.</p>
+    </div>
+
+    <div class="feature-grid">
+      <div class="feature" data-go="map">
+        <div class="icon">🕸️</div>
+        <h3>Карта связей</h3>
+        <div class="stat">24 персонажа · 38 связей</div>
+      </div>
+      <div class="feature" data-go="timeline">
+        <div class="icon">📜</div>
+        <h3>Таймлайн</h3>
+        <div class="stat">42 события · 3 сезона</div>
+      </div>
+      <div class="feature" data-go="theories">
+        <div class="icon">💡</div>
+        <h3>Теории</h3>
+        <div class="stat">18 гипотез с аргументами</div>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <h2>Последние теории</h2>
+      <span class="muted">смотреть все →</span>
+    </div>
+
+    <div class="theory-grid">
+      <div class="card theory-card">
+        <div class="head">
+          <h3>Снейп любил Лили</h3>
+          <span class="spoiler-badge">🔒 ур. 2</span>
+        </div>
+        <ul>
+          <li>Патронус — лань, как у Лили</li>
+          <li>Всегда защищал Гарри, хоть и втайне</li>
+        </ul>
+        <div class="tags">
+          <span class="tag">#разоблачение</span>
+          <span class="tag">#жертва</span>
+        </div>
+      </div>
+
+      <div class="card theory-card">
+        <div class="head">
+          <h3>Гарри — крестраж</h3>
+          <span class="spoiler-badge">🔒 ур. 3</span>
+        </div>
+        <ul>
+          <li>Связь со змеёй и шрамом</li>
+          <li>Видит чужие воспоминания</li>
+        </ul>
+        <div class="tags">
+          <span class="tag">#финал</span>
+          <span class="tag">#теория</span>
+        </div>
+      </div>
+
+      <div class="card theory-card">
+        <div class="head">
+          <h3>Дамблдор знал всё</h3>
+          <span class="spoiler-badge">🔒 ур. 1</span>
+        </div>
+        <ul>
+          <li>Слишком много совпадений</li>
+          <li>Оставил подсказки в завещании</li>
+        </ul>
+        <div class="tags">
+          <span class="tag">#заговор</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       ЭКРАН 2: КАРТА СВЯЗЕЙ
+       ============================================================ -->
+  <section id="screen-map" class="screen">
+    <div class="map-layout">
+      <aside class="sidebar">
+        <div class="filter-group">
+          <h4>Сезон</h4>
+          <label class="checkbox"><input type="checkbox" checked> Сезон 1</label>
+          <label class="checkbox"><input type="checkbox" checked> Сезон 2</label>
+          <label class="checkbox"><input type="checkbox" checked> Сезон 3</label>
+        </div>
+
+        <div class="filter-group">
+          <h4>Тип связи</h4>
+          <label class="checkbox">
+            <input type="checkbox" checked>
+            <span class="legend-dot" style="background:var(--ally)"></span> Союз
+          </label>
+          <label class="checkbox">
+            <input type="checkbox" checked>
+            <span class="legend-dot" style="background:var(--conflict)"></span> Конфликт
+          </label>
+          <label class="checkbox">
+            <input type="checkbox" checked>
+            <span class="legend-dot" style="background:var(--romance)"></span> Романтика
+          </label>
+        </div>
+
+        <div class="filter-group">
+          <h4>Спойлеры</h4>
+          <div class="slider-row">
+            <input type="range" min="1" max="3" value="3" id="map-spoiler">
+            <span id="map-spoiler-val">3</span>
+          </div>
+        </div>
+      </aside>
+
+      <div class="graph-wrap">
+        <!-- Граф рисуется на чистом SVG. Меняйте координаты, подписи, цвета. -->
+        <svg viewBox="0 0 700 500" preserveAspectRatio="xMidYMid meet">
+          <!-- связи -->
+          <line x1="350" y1="120" x2="180" y2="300" stroke="var(--ally)"     stroke-width="2"/>
+          <line x1="350" y1="120" x2="520" y2="300" stroke="var(--conflict)" stroke-width="2" stroke-dasharray="5 4"/>
+          <line x1="180" y1="300" x2="520" y2="300" stroke="var(--romance)"  stroke-width="2"/>
+          <line x1="180" y1="300" x2="350" y2="420" stroke="var(--ally)"     stroke-width="2"/>
+          <line x1="520" y1="300" x2="350" y2="420" stroke="var(--conflict)" stroke-width="2"/>
+
+          <!-- подписи связей -->
+          <text x="245" y="200" fill="var(--text-dim)" font-size="11" font-family="JetBrains Mono">союз</text>
+          <text x="445" y="200" fill="var(--text-dim)" font-size="11" font-family="JetBrains Mono">конфликт</text>
+          <text x="330" y="295" fill="var(--text-dim)" font-size="11" font-family="JetBrains Mono">романтика</text>
+
+          <!-- узлы -->
+          <g>
+            <circle cx="350" cy="120" r="34" fill="var(--bg-hover)" stroke="var(--accent)" stroke-width="2"/>
+            <text x="350" y="126" text-anchor="middle" fill="var(--text)" font-size="14" font-weight="700">Гарри</text>
+          </g>
+          <g>
+            <circle cx="180" cy="300" r="34" fill="var(--bg-hover)" stroke="var(--accent)" stroke-width="2"/>
+            <text x="180" y="306" text-anchor="middle" fill="var(--text)" font-size="14" font-weight="700">Гермиона</text>
+          </g>
+          <g>
+            <circle cx="520" cy="300" r="34" fill="var(--bg-hover)" stroke="var(--accent)" stroke-width="2"/>
+            <text x="520" y="306" text-anchor="middle" fill="var(--text)" font-size="14" font-weight="700">Драко</text>
+          </g>
+          <g>
+            <circle cx="350" cy="420" r="34" fill="var(--bg-hover)" stroke="var(--accent)" stroke-width="2"/>
+            <text x="350" y="426" text-anchor="middle" fill="var(--text)" font-size="14" font-weight="700">Рон</text>
+          </g>
+        </svg>
+
+        <div class="graph-controls">
+          <button title="Приблизить">+</button>
+          <button title="Отдалить">−</button>
+          <button title="По центру">⛶</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       ЭКРАН 3: ТАЙМЛАЙН
+       ============================================================ -->
+  <section id="screen-timeline" class="screen">
+    <div class="tabs">
+      <button class="active">Сезон 1</button>
+      <button>Сезон 2</button>
+      <button>Сезон 3</button>
+    </div>
+
+    <div class="season-label">Сезон 1</div>
+
+    <div class="timeline">
+      <div class="event">
+        <div class="event-title">
+          Сцена на балу
+          <span class="spoiler-badge">🔒 ур. 1</span>
+        </div>
+        <div class="event-body">Первое столкновение героев вне школы. Здесь зарождается конфликт, который растянется на весь сезон.</div>
+        <div class="tags">
+          <span class="tag">#разоблачение</span>
+          <span class="tag">#бал</span>
+        </div>
+      </div>
+
+      <div class="event">
+        <div class="event-title">
+          Появление антагониста
+          <span class="spoiler-badge">🔒 ур. 2</span>
+        </div>
+        <div class="event-body">Персонаж X впервые показан как угроза. Обратите внимание на деталь в одежде — она всплывёт в финале.</div>
+        <div class="tags">
+          <span class="tag">#завязка</span>
+        </div>
+      </div>
+
+      <div class="event">
+        <div class="event-title">
+          Финал сезона
+          <span class="spoiler-badge">🔒 ур. 3</span>
+        </div>
+        <div class="spoiler-block" onclick="this.outerHTML='<div class=\'event-body\'>Жертва ради семьи — герой отдаёт то, что было ему дороже всего. Дальше смотрите сами 👀</div>'">
+          🔒🔒🔒 Спойлер уровня 3 — нажмите, чтобы показать
+        </div>
+      </div>
+    </div>
+
+    <div class="season-label" style="margin-top:32px">Сезон 2</div>
+    <div class="timeline">
+      <div class="event">
+        <div class="event-title">Тайна старого письма</div>
+        <div class="event-body">Письмо, найденное в библиотеке, меняет трактовку событий первого сезона.</div>
+        <div class="tags"><span class="tag">#интрига</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       ЭКРАН 4: ТЕОРИИ
+       ============================================================ -->
+  <section id="screen-theories" class="screen">
+    <div class="toolbar">
+      <input class="search-input" id="theory-search" type="text" placeholder="🔍 Поиск по теориям и тегам...">
+      <div class="slider-row" style="min-width:220px">
+        <span class="muted" style="font-size:13px;white-space:nowrap">Спойлеры до:</span>
+        <input type="range" min="1" max="3" value="3" id="theory-spoiler">
+        <span id="theory-spoiler-val" style="font-family:'JetBrains Mono'">3</span>
+      </div>
+    </div>
+
+    <div class="theory-grid" id="theory-grid">
+      <!-- Карточки вставляются скриптом ниже -->
+    </div>
+  </section>
+</main>
+
+<script>
+  /* ============================================================
+     НАВИГАЦИЯ
+     ============================================================ */
+  const navButtons = document.querySelectorAll('.nav button');
+  const screens = document.querySelectorAll('.screen');
+
+  function goTo(name) {
+    screens.forEach(s => s.classList.toggle('active', s.id === 'screen-' + name));
+    navButtons.forEach(b => b.classList.toggle('active', b.dataset.screen === name));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  navButtons.forEach(b => b.addEventListener('click', () => goTo(b.dataset.screen)));
+
+  // клики по карточкам на главной
+  document.querySelectorAll('[data-go]').forEach(el => {
+    el.addEventListener('click', () => goTo(el.dataset.go));
+  });
+
+  /* ============================================================
+     ДАННЫЕ ТЕОРИЙ — редактируйте здесь
+     ============================================================ */
+  const theories = [
+    {
+      id: 1,
+      title: 'Снейп любил Лили',
+      spoiler: 2,
+      arguments: ['Патронус — лань, как у Лили', 'Всегда защищал Гарри, хоть и втайне'],
+      tags: ['#разоблачение', '#жертва']
+    },
+    {
+      id: 2,
+      title: 'Гарри — крестраж',
+      spoiler: 3,
+      arguments: ['Связь со змеёй и шрамом', 'Видит чужие воспоминания'],
+      tags: ['#финал', '#теория']
+    },
+    {
+      id: 3,
+      title: 'Дамблдор знал всё',
+      spoiler: 1,
+      arguments: ['Слишком много совпадений', 'Оставил подсказки в завещании'],
+      tags: ['#заговор']
+    },
+    {
+      id: 4,
+      title: 'Рон — Дамблдор в прошлом',
+      spoiler: 1,
+      arguments: ['Никогда не видели их вместе на одной сцене', 'Оба любят сладкое'],
+      tags: ['#шутка', '#фанатское']
+    }
+  ];
+
+  const grid = document.getElementById('theory-grid');
+  const searchInput = document.getElementById('theory-search');
+  const spoilerSlider = document.getElementById('theory-spoiler');
+  const spoilerVal = document.getElementById('theory-spoiler-val');
+
+  function renderTheories() {
+    const query = searchInput.value.trim().toLowerCase();
+    const maxSpoiler = +spoilerSlider.value;
+    spoilerVal.textContent = maxSpoiler;
+
+    const list = theories.filter(t => {
+      const matchQuery = !query
+        || t.title.toLowerCase().includes(query)
+        || t.tags.some(tag => tag.toLowerCase().includes(query));
+      return matchQuery;
+    });
+
+    grid.innerHTML = list.map(t => {
+      const locked = t.spoiler > maxSpoiler;
+      const body = locked
+        ? `<div class="spoiler-block">🔒 Спойлер уровня ${t.spoiler} — поднимите ползунок, чтобы увидеть</div>`
+        : `<ul>${t.arguments.map(a => `<li>${a}</li>`).join('')}</ul>`;
+
+      return `
+        <div class="card theory-card">
+          <div class="head">
+            <h3>${t.title}</h3>
+            <span class="spoiler-badge">🔒 ур. ${t.spoiler}</span>
+          </div>
+          ${body}
+          <div class="tags">${t.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}</div>
+        </div>
+      `;
+    }).join('') || '<p class="muted">Ничего не найдено</p>';
+  }
+
+  searchInput.addEventListener('input', renderTheories);
+  spoilerSlider.addEventListener('input', renderTheories);
+  renderTheories();
+
+  /* ============================================================
+     СПОЙЛЕР НА КАРТЕ — просто для демонстрации
+     ============================================================ */
+  const mapSpoiler = document.getElementById('map-spoiler');
+  const mapSpoilerVal = document.getElementById('map-spoiler-val');
+  mapSpoiler.addEventListener('input', () => mapSpoilerVal.textContent = mapSpoiler.value);
+</script>
+
+</body>
+</html>
