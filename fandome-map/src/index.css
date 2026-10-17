@@ -124,7 +124,7 @@
   align-items: baseline;
   margin-bottom: 16px;
 }
-.section-header h2 { font-size: 20px; font-weight: 700; }
+.section-header h2 { font-size: 20px; font-weight: 700; margin-left: 25px; }
 .section-header a { font-size: 14px; transition: color .15s; }
 .section-header a:hover { color: var(--text); }
 
@@ -132,6 +132,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 16px;
+  margin-left: 40px;
 }
 
 .card {
