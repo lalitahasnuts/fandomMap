@@ -299,6 +299,32 @@
   .event .event-body { color: var(--text-dim); font-size: 14px; margin-bottom: 6px; }
   .event .tags { display: flex; gap: 6px; flex-wrap: wrap; }
 
+.react-flow {
+  --xy-node-background-color-default: var(--bg-card);
+  --xy-node-color-default: var(--text-h);
+  --xy-node-border-default: 1px solid var(--border);
+  --xy-node-border-radius-default: var(--radius-md);
+  --xy-edge-stroke-default: var(--border);
+  --xy-background-color-default: var(--bg);
+}
+
+/* Узлы */
+.react-flow__node {
+  background: var(--bg-card);
+  color: var(--text-h);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.react-flow__node:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --text: #9ca3af;

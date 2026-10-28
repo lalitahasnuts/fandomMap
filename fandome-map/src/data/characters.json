@@ -1,1 +1,9 @@
-[]
+{
+  "nodes": [
+    { "id": "diluc", "position": { "x": 100, "y": 100 }, "data": { "label": "Дилюк" } },
+    { "id": "kaeya", "position": { "x": 400, "y": 200 }, "data": { "label": "Кэйа" } }
+  ],
+  "edges": [
+    { "id": "e1", "source": "diluc", "target": "kaeya", "label": "названные братья" }
+  ]
+}
