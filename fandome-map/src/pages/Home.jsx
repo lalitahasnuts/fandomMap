@@ -13,7 +13,7 @@ const features = [
   {
     icon: "📜",
     title: "Таймлайн",
-    stat: "42 события · 3 сезона",
+    stat: "42 события · 6 регионов", 
     to: "/timeline",
   },
   {
@@ -25,14 +25,16 @@ const features = [
 ];
 
 export default function Home() {
-  const latest = theories.slice(0, 3);
+  const safeTheories = theories.filter((t) => t.spoiler === 1);
+  
+  const latest = safeTheories.slice(0, 3);
 
   return (
     <>
       <section className="hero">
         <h1>Исследуй вселенную</h1>
         <p className="muted">
-          Связи между персонажами, события по сезонам и теории фанатов — в одном месте.
+          Связи между персонажами, события по регионам и теории фанатов — в одном месте.
         </p>
       </section>
 
@@ -50,7 +52,7 @@ export default function Home() {
 
         <div className="theory-grid">
           {latest.map((t) => (
-            <TheoryCard key={t.id} theory={t} />
+            <TheoryCard key={t.id} theory={t} maxSpoiler={1} />
           ))}
         </div>
       </section>
